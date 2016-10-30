@@ -126,10 +126,23 @@ class Pongo
 
 	playerCollide(player, ball) {
 		if (
-			player.left < ball.right && player.right > ball.left
-			&& player.top < ball.bottom && player.bottom > ball.top
+			ball.right > player.left && ball.left < player.right
+			&& ball.bottom > player.top && ball.top < player.bottom
 		) {
 			ball.vel.x = -ball.vel.x;
+
+			if (ball.bottom > player.top && ball.top < player.top) {
+				//console.log('top collision');
+				ball.vel.y = - Math.abs(ball.vel.y);
+				// revert horizontal direction
+				ball.vel.x = -ball.vel.x;
+			}
+			if (ball.top < player.bottom && ball.bottom > player.bottom) {
+				//console.log('bottom collision');
+				ball.vel.y = Math.abs(ball.vel.y);
+				// revert horizontal direction
+				ball.vel.x = -ball.vel.x;
+			}
 		}
 	}
 
