@@ -66,8 +66,8 @@ class Pongo
 			new Player(this._canvas.width - 30, this._canvas.height / 2)
 		];
 
-		this.players[0].vel.y = 111 * this.randDir();
-		this.players[1].vel.y = 111 * this.randDir();
+		this.players[0].vel.y = 300 * this.randDir();
+		this.players[1].vel.y = 300 * this.randDir();
 
 		console.log(this.players);
 
@@ -82,8 +82,8 @@ class Pongo
 		}
 		frameUpdated.call(this);
 	}
-	randDir(){
-		return Math.random() > .5 ? 1 : -1;
+	randDir(chance = .5){
+		return Math.random() > chance ? 1 : -1;
 	}
 
 	update(delta) {
@@ -116,6 +116,10 @@ class Pongo
 
 		// detect collision with players and change move dirrection of the ball
 		this.players.forEach(player => this.playerCollide(player, this.ball));
+
+		// randomly change player direction
+		this.players[0].vel.y *= this.randDir(0.006);
+		this.players[1].vel.y *= this.randDir(0.004);
 
 		this.draw();
 	}
