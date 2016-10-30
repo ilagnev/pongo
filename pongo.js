@@ -30,47 +30,56 @@ class Ball extends Rect
 	}
 }
 
-var canvas = document.getElementById('canvas');
-var context = canvas.getContext('2d');
+class Pongo 
+{
+	constructor(canvas) {
+		this._canvas = canvas;
+		this._context = canvas.getContext('2d');
 
-var ball = new Ball();
-// set ball velocity in pixels per sec
-ball.vel.x = 333 * (Math.random() > .5 ? 1 : -1);
-ball.vel.y = 333 * (Math.random() > .5 ? 1: -1);
-console.log(ball);
+		this.ball = new Ball();
+		// set ball velocity in pixels per sec
+		this.ball.vel.x = 333 * (Math.random() > .5 ? 1 : -1);
+		this.ball.vel.y = 333 * (Math.random() > .5 ? 1: -1);
+		console.log(this.ball);
 
-var prevUpdatedTime;
-function frameUpdated(ms) {
-	if (prevUpdatedTime) {
-		// delta between frames
-		update((ms - prevUpdatedTime) / 1000);
+		var prevUpdatedTime;
+		function frameUpdated(ms) {
+			if (prevUpdatedTime) {
+				// delta between frames
+				this.update((ms - prevUpdatedTime) / 1000);
+			}
+			prevUpdatedTime = ms;
+			requestAnimationFrame(frameUpdated.bind(this));
+		}
+		frameUpdated.call(this);
 	}
-	prevUpdatedTime = ms;
-	requestAnimationFrame(frameUpdated);
+
+	update(delta) {
+		// detect collision with walls and change direction of velocity
+		this.ball.vel.x = this.ball.pos.x + this.ball.size.x > this._canvas.width || this.ball.pos.x < 0 
+			? -this.ball.vel.x 
+			: this.ball.vel.x;
+			
+		this.ball.vel.y = this.ball.pos.y + this.ball.size.y > this._canvas.height || this.ball.pos.y < 0
+			? -this.ball.vel.y 
+			: this.ball.vel.y;
+
+		// change this.ball position in time with deltatime
+		this.ball.pos.x += this.ball.vel.x * delta;
+		this.ball.pos.y += this.ball.vel.y * delta;
+
+		// draw background
+		this._context.fillStyle = '#551A8B';
+		this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
+
+		// draw this.ball
+		this._context.fillStyle = '#fff';
+		this._context.fillRect(this.ball.pos.x, this.ball.pos.y, this.ball.size.x, this.ball.size.y);
+	}
 }
 
-function update(delta) {
-	// detect collision with walls and change direction of velocity
-	ball.vel.x = ball.pos.x + ball.size.x > canvas.width || ball.pos.x < 0 
-		? -ball.vel.x 
-		: ball.vel.x;
-		
-	ball.vel.y = ball.pos.y + ball.size.y > canvas.height || ball.pos.y < 0
-		? -ball.vel.y 
-		: ball.vel.y;
+// get canvas el
+var canvas = document.getElementById('canvas');
+// start the game
+var pongo = new Pongo(canvas);
 
-	// change ball position in time with deltatime
-	ball.pos.x += ball.vel.x * delta;
-	ball.pos.y += ball.vel.y * delta;
-
-	// draw background
-	context.fillStyle = '#551A8B';
-	context.fillRect(0, 0, canvas.width, canvas.height);
-
-	// draw ball
-	context.fillStyle = '#fff';
-	context.fillRect(ball.pos.x, ball.pos.y, ball.size.x, ball.size.y);
-}
-
-// run and slide
-frameUpdated();
