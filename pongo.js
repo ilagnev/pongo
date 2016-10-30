@@ -14,14 +14,28 @@ class Rect
 		this.pos = new Pos(offsetLeft, offsetTop);
 		this.size = new Pos(width, height);
 	}
+
+	get left() {
+		return this.pos.x - this.size.x / 2;
+	}
+	get right() {
+		return this.pos.x + this.size.x / 2;
+	}
+
+	get top() {
+		return this.pos.y - this.size.y / 2;
+	}
+	get bottom() {
+		return this.pos.y + this.size.y / 2;
+	}
 }
 
 class Ball extends Rect 
 {
 	constructor() {
 		super(
-			(canvas.width / 2) -5, 
-			(canvas.height / 2) -5,
+			(canvas.width / 2), 
+			(canvas.height / 2),
 			10, 
 			10
 		);
@@ -32,8 +46,8 @@ class Ball extends Rect
 
 class Player extends Rect
 {
-		constructor() {
-		super(0, 0, 20, 100);
+	constructor(offsetTop, offsetLeft) {
+		super(offsetTop, offsetLeft, 20, 100);
 	}
 }
 
@@ -51,10 +65,10 @@ class Pongo
 
 		// create players
 		this.players = [
-			new Player(),
-			new Player()
+			new Player(30, this._canvas.height / 2),
+			new Player(this._canvas.width - 30, this._canvas.height / 2)
 		];
-		this.players[1].pos.x = this._canvas.width - this.players[1].size.x;
+		console.log(this.players);
 
 		var prevUpdatedTime;
 		function frameUpdated(ms) {
@@ -70,17 +84,21 @@ class Pongo
 
 	update(delta) {
 		// detect collision with walls and change direction of velocity
-		this.ball.vel.x = this.ball.pos.x + this.ball.size.x > this._canvas.width || this.ball.pos.x < 0 
+		this.ball.vel.x = this.ball.right > this._canvas.width || this.ball.left < 0 
 			? -this.ball.vel.x 
 			: this.ball.vel.x;
 			
-		this.ball.vel.y = this.ball.pos.y + this.ball.size.y > this._canvas.height || this.ball.pos.y < 0
+		this.ball.vel.y = this.ball.bottom > this._canvas.height || this.ball.top < 0
 			? -this.ball.vel.y 
 			: this.ball.vel.y;
 
 		// change this.ball position in time with deltatime
 		this.ball.pos.x += this.ball.vel.x * delta;
 		this.ball.pos.y += this.ball.vel.y * delta;
+
+		// change players position
+		this.players[0].pos.y = this.ball.pos.y;
+		this.players[1].pos.y = this.ball.pos.y;
 
 		this.draw();
 	}
@@ -101,7 +119,7 @@ class Pongo
 	drawRect(rect, color = '#fff') {
 		this._context.fillStyle = color;
 		this._context.fillRect(
-			rect.pos.x, rect.pos.y, 
+			rect.left, rect.top, 
 			rect.size.x, rect.size.y
 		);
 	}
