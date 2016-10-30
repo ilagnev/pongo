@@ -30,17 +30,31 @@ class Ball extends Rect
 	}
 }
 
+class Player extends Rect
+{
+		constructor() {
+		super(0, 0, 20, 100);
+	}
+}
+
 class Pongo 
 {
 	constructor(canvas) {
 		this._canvas = canvas;
 		this._context = canvas.getContext('2d');
 
+		// create ball with velocity
 		this.ball = new Ball();
-		// set ball velocity in pixels per sec
 		this.ball.vel.x = 333 * (Math.random() > .5 ? 1 : -1);
 		this.ball.vel.y = 333 * (Math.random() > .5 ? 1: -1);
 		console.log(this.ball);
+
+		// create players
+		this.players = [
+			new Player(),
+			new Player()
+		];
+		this.players[1].pos.x = this._canvas.width - this.players[1].size.x;
 
 		var prevUpdatedTime;
 		function frameUpdated(ms) {
@@ -68,13 +82,28 @@ class Pongo
 		this.ball.pos.x += this.ball.vel.x * delta;
 		this.ball.pos.y += this.ball.vel.y * delta;
 
+		this.draw();
+	}
+
+	draw() {
 		// draw background
 		this._context.fillStyle = '#551A8B';
 		this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
 
 		// draw this.ball
-		this._context.fillStyle = '#fff';
-		this._context.fillRect(this.ball.pos.x, this.ball.pos.y, this.ball.size.x, this.ball.size.y);
+		this.drawRect(this.ball);
+
+		// draw players
+		this.drawRect(this.players[0]);
+		this.drawRect(this.players[1]);
+	}
+
+	drawRect(rect, color = '#fff') {
+		this._context.fillStyle = color;
+		this._context.fillRect(
+			rect.pos.x, rect.pos.y, 
+			rect.size.x, rect.size.y
+		);
 	}
 }
 
