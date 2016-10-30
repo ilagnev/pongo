@@ -32,13 +32,8 @@ class Rect
 
 class Ball extends Rect 
 {
-	constructor() {
-		super(
-			(canvas.width / 2), 
-			(canvas.height / 2),
-			10, 
-			10
-		);
+	constructor(offsetTop, offsetLeft) {
+		super(offsetTop, offsetLeft, 10, 10);
 		// velocity: pixels per sec
 		this.vel = {x:0, y:0};
 	}
@@ -48,6 +43,8 @@ class Player extends Rect
 {
 	constructor(offsetTop, offsetLeft) {
 		super(offsetTop, offsetLeft, 20, 100);
+		// velocity: pixels per sec
+		this.vel = {x:0, y:0};
 	}
 }
 
@@ -58,9 +55,9 @@ class Pongo
 		this._context = canvas.getContext('2d');
 
 		// create ball with velocity
-		this.ball = new Ball();
-		this.ball.vel.x = 333 * (Math.random() > .5 ? 1 : -1);
-		this.ball.vel.y = 333 * (Math.random() > .5 ? 1: -1);
+		this.ball = new Ball(this._canvas.width / 2, this._canvas.height / 2);
+		this.ball.vel.x = 333 * this.randDir();
+		this.ball.vel.y = 333 * this.randDir();
 		console.log(this.ball);
 
 		// create players
@@ -68,6 +65,10 @@ class Pongo
 			new Player(30, this._canvas.height / 2),
 			new Player(this._canvas.width - 30, this._canvas.height / 2)
 		];
+
+		this.players[0].vel.y = 111 * this.randDir();
+		this.players[1].vel.y = 111 * this.randDir();
+
 		console.log(this.players);
 
 		var prevUpdatedTime;
@@ -80,6 +81,9 @@ class Pongo
 			requestAnimationFrame(frameUpdated.bind(this));
 		}
 		frameUpdated.call(this);
+	}
+	randDir(){
+		return Math.random() > .5 ? 1 : -1;
 	}
 
 	update(delta) {
@@ -96,21 +100,36 @@ class Pongo
 		this.ball.pos.x += this.ball.vel.x * delta;
 		this.ball.pos.y += this.ball.vel.y * delta;
 
-		// change players position
-		this.players[0].pos.y = this.ball.pos.y;
-		this.players[1].pos.y = this.ball.pos.y;
 
+		// detect players with wall collision
+		this.players[0].vel.y = this.players[0].bottom > this._canvas.height || this.players[0].top < 0
+			? -this.players[0].vel.y
+			: this.players[0].vel.y;
+
+		this.players[1].vel.y = this.players[1].bottom > this._canvas.height || this.players[1].top < 0
+			? -this.players[1].vel.y
+			: this.players[1].vel.y;
+
+		// change players position
+		this.players[0].pos.y += this.players[0].vel.y * delta;
+		this.players[1].pos.y += this.players[1].vel.y * delta;
+
+		// detect collision with players and change move dirrection of the ball
 		this.players.forEach(player => this.playerCollide(player, this.ball));
 
 		this.draw();
 	}
 
+	wallCollide(rect) {
+
+	}
+
 	playerCollide(player, ball) {
-		if (player.left < ball.right && player.right > ball.left) {
+		if (
+			player.left < ball.right && player.right > ball.left
+			&& player.top < ball.bottom && player.bottom > ball.top
+		) {
 			ball.vel.x = -ball.vel.x;
-		}
-		if (player.top < ball.bottom && player.bottom > ball.top) {
-			ball.vel.y = -ball.vel.y;
 		}
 	}
 
