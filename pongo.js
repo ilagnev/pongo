@@ -100,7 +100,18 @@ class Pongo
 		this.players[0].pos.y = this.ball.pos.y;
 		this.players[1].pos.y = this.ball.pos.y;
 
+		this.players.forEach(player => this.playerCollide(player, this.ball));
+
 		this.draw();
+	}
+
+	playerCollide(player, ball) {
+		if (player.left < ball.right && player.right > ball.left) {
+			ball.vel.x = -ball.vel.x;
+		}
+		if (player.top < ball.bottom && player.bottom > ball.top) {
+			ball.vel.y = -ball.vel.y;
+		}
 	}
 
 	draw() {
