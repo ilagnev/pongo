@@ -68,9 +68,9 @@ class Pongo
 		this.players[1].vel.y = 300 * this.randDir();
 
 		// score chars
-		var charWidth = 3,
-			charHeight = 5,
-			charPixelSize = 10;
+		this.charWidth = 3,
+		this.charHeight = 5,
+		this.charPixelSize = 10;
 
 		// chars canvases
 		this.chars = [
@@ -86,8 +86,8 @@ class Pongo
 			'111101111001111'
 		].map(str => {
 			var canvas = document.createElement('canvas');
-			canvas.width = charWidth * charPixelSize;
-			canvas.height = charHeight * charPixelSize;
+			canvas.width = this.charWidth * this.charPixelSize;
+			canvas.height = this.charHeight * this.charPixelSize;
 			var context = canvas.getContext('2d');
 			context.fillStyle = '#fff';
 
@@ -95,9 +95,9 @@ class Pongo
 			str.split('').forEach((char, index) => {
 				if (char === '1') {
 					context.fillRect(
-						(index * charPixelSize) % canvas.width, 
-						~~(index / charWidth) * charPixelSize, 
-						charPixelSize, charPixelSize
+						(index * this.charPixelSize) % canvas.width, 
+						~~(index / this.charWidth) * this.charPixelSize, 
+						this.charPixelSize, this.charPixelSize
 					)
 				}
 			});
@@ -123,7 +123,6 @@ class Pongo
 	}
 
 	reset() {
-		console.log('%o - %o', this.players[0].score, this.players[1].score);
 		this.ball.pos.x = this._canvas.width / 2;
 		this.ball.pos.y = this._canvas.height / 2;
 		this.ball.vel.x = 333 * this.randDir();
@@ -215,18 +214,18 @@ class Pongo
 		//this._context.drawImage(this.chars[4], 10, 10);
 		//this._context.drawImage(this.chars[1], 50, 10);
 		const offset = this._canvas.width / 3;
-		var chWt = 40;
 		this.players.forEach((player, index) => {
 			var chars = player.score.toString().split('')
 
 			// shift offset for second player
-			var pos = offset + offset * index - (chars.length * chWt) / 2;
+			var pos = offset + offset * index 
+				- chars.length * (this.charWidth * this.charPixelSize + this.charPixelSize) / 2;
 			
 			chars.forEach((char, i) => {
 				this._context.drawImage(
 					this.chars[char], 
-					pos + i * chWt,
-					10
+					pos + i * (this.charWidth * this.charPixelSize + this.charPixelSize),
+					this.charPixelSize * 2
 				);
 			});
 		});
