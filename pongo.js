@@ -45,6 +45,7 @@ class Player extends Rect
 		super(offsetTop, offsetLeft, 20, 100);
 		// velocity: pixels per sec
 		this.vel = {x:0, y:0};
+		this.score = 0;
 	}
 }
 
@@ -56,8 +57,7 @@ class Pongo
 
 		// create ball with velocity
 		this.ball = new Ball(this._canvas.width / 2, this._canvas.height / 2);
-		this.ball.vel.x = 333 * this.randDir();
-		this.ball.vel.y = 333 * this.randDir();
+		
 		console.log(this.ball);
 
 		// create players
@@ -81,16 +81,31 @@ class Pongo
 			requestAnimationFrame(frameUpdated.bind(this));
 		}
 		frameUpdated.call(this);
+
+		this.reset();
 	}
 	randDir(chance = .5){
 		return Math.random() > chance ? 1 : -1;
 	}
 
+	reset() {
+		this.ball.pos.x = this._canvas.width / 2;
+		this.ball.pos.y = this._canvas.height / 2;
+		this.ball.vel.x = 333 * this.randDir();
+		this.ball.vel.y = 333 * this.randDir();
+	}
+
 	update(delta) {
-		// detect collision with walls and change direction of velocity
-		this.ball.vel.x = this.ball.right > this._canvas.width || this.ball.left < 0 
-			? -this.ball.vel.x 
-			: this.ball.vel.x;
+		// detect collision with walls and update score then reset
+		if (this.ball.right > this._canvas.width) {
+			this.players[0].score++;
+			this.ball.vel.x = -this.ball.vel.x;
+			this.reset();
+		} else if (this.ball.left < 0) {
+			this.players[1].score++;
+			this.ball.vel.x = -this.ball.vel.x;
+			this.reset();
+		}
 			
 		this.ball.vel.y = this.ball.bottom > this._canvas.height || this.ball.top < 0
 			? -this.ball.vel.y 
