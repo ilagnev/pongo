@@ -57,8 +57,6 @@ class Pongo
 
 		// create ball with velocity
 		this.ball = new Ball(this._canvas.width / 2, this._canvas.height / 2);
-		
-		console.log(this.ball);
 
 		// create players
 		this.players = [
@@ -69,7 +67,43 @@ class Pongo
 		this.players[0].vel.y = 300 * this.randDir();
 		this.players[1].vel.y = 300 * this.randDir();
 
-		console.log(this.players);
+		// score chars
+		var charWidth = 3,
+			charHeight = 5,
+			charPixelSize = 10;
+
+		// chars canvases
+		this.chars = [
+			'111101101101111',
+			'010010010010010',
+			'111001111100111',
+			'111001111001111',
+			'101101111001001',
+			'111100111001111',
+			'111100111101111',
+			'111001001001001',
+			'111101111101111',
+			'111101111001111'
+		].map(str => {
+			var canvas = document.createElement('canvas');
+			canvas.width = charWidth * charPixelSize;
+			canvas.height = charHeight * charPixelSize;
+			var context = canvas.getContext('2d');
+			context.fillStyle = '#fff';
+
+			// print each pixel to char canvas
+			str.split('').forEach((char, index) => {
+				if (char === '1') {
+					context.fillRect(
+						(index * charPixelSize) % canvas.width, 
+						~~(index / charWidth) * charPixelSize, 
+						charPixelSize, charPixelSize
+					)
+				}
+			});
+
+			return canvas;
+		})
 
 		var prevUpdatedTime;
 		function frameUpdated(ms) {
@@ -89,6 +123,7 @@ class Pongo
 	}
 
 	reset() {
+		console.log('%o - %o', this.players[0].score, this.players[1].score);
 		this.ball.pos.x = this._canvas.width / 2;
 		this.ball.pos.y = this._canvas.height / 2;
 		this.ball.vel.x = 333 * this.randDir();
@@ -139,10 +174,6 @@ class Pongo
 		this.draw();
 	}
 
-	wallCollide(rect) {
-
-	}
-
 	playerCollide(player, ball) {
 		if (
 			ball.right > player.left && ball.left < player.right
@@ -150,14 +181,14 @@ class Pongo
 		) {
 			ball.vel.x = -ball.vel.x;
 
+			// change ball direction to the top if ball on the top
 			if (ball.bottom > player.top && ball.top < player.top) {
-				//console.log('top collision');
 				ball.vel.y = - Math.abs(ball.vel.y);
 				// revert horizontal direction
 				ball.vel.x = -ball.vel.x;
 			}
+			// change ball direction to the bottom if ball on the bottom
 			if (ball.top < player.bottom && ball.bottom > player.bottom) {
-				//console.log('bottom collision');
 				ball.vel.y = Math.abs(ball.vel.y);
 				// revert horizontal direction
 				ball.vel.x = -ball.vel.x;
@@ -176,6 +207,29 @@ class Pongo
 		// draw players
 		this.drawRect(this.players[0]);
 		this.drawRect(this.players[1]);
+
+		this.drawScore();
+	}
+
+	drawScore() {
+		//this._context.drawImage(this.chars[4], 10, 10);
+		//this._context.drawImage(this.chars[1], 50, 10);
+		const offset = this._canvas.width / 3;
+		var chWt = 40;
+		this.players.forEach((player, index) => {
+			var chars = player.score.toString().split('')
+
+			// shift offset for second player
+			var pos = offset + offset * index - (chars.length * chWt) / 2;
+			
+			chars.forEach((char, i) => {
+				this._context.drawImage(
+					this.chars[char], 
+					pos + i * chWt,
+					10
+				);
+			});
+		});
 	}
 
 	drawRect(rect, color = '#fff') {
