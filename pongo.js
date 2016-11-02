@@ -167,7 +167,9 @@ class Pongo
 		this.players[1].pos.y += this.players[1].vel.y * delta;
 
 		// detect collision with players and change move dirrection of the ball
-		this.players.forEach(player => this.playerCollide(player, this.ball));
+		this.players.forEach(function(player){
+			this.playerCollide(player, this.ball)
+		}.bind(this));
 
 		// randomly change player direction
 		this.players[0].vel.y *= this.randDir(0.006);
