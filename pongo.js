@@ -57,6 +57,9 @@ class Pongo
 		this._canvas = canvas;
 		this._context = canvas.getContext('2d');
 
+		this._canvas.width = window.innerWidth
+		this._canvas.height = window.innerHeight
+
 		// create ball with velocity
 		this.ball = new Ball(this._canvas.width / 2, this._canvas.height / 2);
 
@@ -66,8 +69,8 @@ class Pongo
 			new Player(this._canvas.width - 30, this._canvas.height / 2)
 		];
 
-		this.players[0].vel.y = 300 * this.randDir();
-		this.players[1].vel.y = 300 * this.randDir();
+		this.players[0].vel.y = this._canvas.height / 1.5 * this.randDir();
+		this.players[1].vel.y = this._canvas.height / 1.5 * this.randDir();
 
 		// score chars
 		this.charWidth = 3,
@@ -119,6 +122,8 @@ class Pongo
 		frameUpdated.call(this);
 
 		this.reset();
+
+		window.addEventListener('resize', this.resize.bind(this), true);
 	}
 	randDir(chance) {
 		chance = chance || .5;
@@ -130,6 +135,20 @@ class Pongo
 		this.ball.pos.y = this._canvas.height / 2;
 		this.ball.vel.x = 333 * this.randDir();
 		this.ball.vel.y = 333 * this.randDir();
+	}
+
+	resize() {
+		var self = this;
+		setTimeout(function(){
+			self._canvas.width = window.innerWidth;
+			self._canvas.height = window.innerHeight;
+
+			self.players[0].pos.y = self._canvas.height / 2;
+			self.players[1].pos.y = self._canvas.height / 2;
+			self.players[1].pos.x = self._canvas.width - 30;
+
+			self.reset();
+		}, 20);
 	}
 
 	update(delta) {
@@ -248,6 +267,6 @@ class Pongo
 
 // get canvas el
 var canvas = document.getElementById('canvas');
+
 // start the game
 var pongo = new Pongo(canvas);
-
