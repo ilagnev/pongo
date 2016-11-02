@@ -2,9 +2,9 @@
 
 class Pos 
 {
-	constructor(x = 0, y = 0) {
-		this.x = x;
-		this.y = y;
+	constructor(x, y) {
+		this.x = x || 0;
+		this.y = y || 0;
 	}
 }
 
@@ -118,7 +118,8 @@ class Pongo
 
 		this.reset();
 	}
-	randDir(chance = .5){
+	randDir(chance) {
+		chance = chance || .5;
 		return Math.random() > chance ? 1 : -1;
 	}
 
@@ -231,8 +232,8 @@ class Pongo
 		});
 	}
 
-	drawRect(rect, color = '#fff') {
-		this._context.fillStyle = color;
+	drawRect(rect, color) {
+		this._context.fillStyle = color || '#fff';
 		this._context.fillRect(
 			rect.left, rect.top, 
 			rect.size.x, rect.size.y
