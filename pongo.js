@@ -52,6 +52,8 @@ class Player extends Rect
 class Pongo 
 {
 	constructor(canvas) {
+		var self = this;
+
 		this._canvas = canvas;
 		this._context = canvas.getContext('2d');
 
@@ -84,20 +86,20 @@ class Pongo
 			'111001001001001',
 			'111101111101111',
 			'111101111001111'
-		].map(str => {
+		].map(function(str){
 			var canvas = document.createElement('canvas');
-			canvas.width = this.charWidth * this.charPixelSize;
-			canvas.height = this.charHeight * this.charPixelSize;
+			canvas.width = self.charWidth * self.charPixelSize;
+			canvas.height = self.charHeight * self.charPixelSize;
 			var context = canvas.getContext('2d');
 			context.fillStyle = '#fff';
 
 			// print each pixel to char canvas
-			str.split('').forEach((char, index) => {
+			str.split('').forEach(function(char, index){
 				if (char === '1') {
 					context.fillRect(
-						(index * this.charPixelSize) % canvas.width, 
-						~~(index / this.charWidth) * this.charPixelSize, 
-						this.charPixelSize, this.charPixelSize
+						(index * self.charPixelSize) % canvas.width, 
+						~~(index / self.charWidth) * self.charPixelSize, 
+						self.charPixelSize, self.charPixelSize
 					)
 				}
 			});
@@ -212,21 +214,22 @@ class Pongo
 	}
 
 	drawScore() {
+		var self = this;
 		//this._context.drawImage(this.chars[4], 10, 10);
 		//this._context.drawImage(this.chars[1], 50, 10);
 		const offset = this._canvas.width / 3;
-		this.players.forEach((player, index) => {
+		this.players.forEach(function(player, index){
 			var chars = player.score.toString().split('')
 
 			// shift offset for second player
 			var pos = offset + offset * index 
-				- chars.length * (this.charWidth * this.charPixelSize + this.charPixelSize) / 2;
+				- chars.length * (self.charWidth * self.charPixelSize + self.charPixelSize) / 2;
 			
-			chars.forEach((char, i) => {
-				this._context.drawImage(
-					this.chars[char], 
-					pos + i * (this.charWidth * this.charPixelSize + this.charPixelSize),
-					this.charPixelSize * 2
+			chars.forEach(function(char, i){
+				self._context.drawImage(
+					self.chars[char], 
+					pos + i * (self.charWidth * self.charPixelSize + self.charPixelSize),
+					self.charPixelSize * 2
 				);
 			});
 		});
