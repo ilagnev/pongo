@@ -219,7 +219,7 @@ class Pongo
 		var self = this;
 		//this._context.drawImage(this.chars[4], 10, 10);
 		//this._context.drawImage(this.chars[1], 50, 10);
-		const offset = this._canvas.width / 3;
+		var offset = this._canvas.width / 3;
 		this.players.forEach(function(player, index){
 			var chars = player.score.toString().split('')
 
